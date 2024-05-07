@@ -1,18 +1,28 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import useIsAuthenticated from "../Hooks/useIsAuthenticated";
 import userImage from "../assets/images/userImage.jpg"
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { authContext } from "../Components/AuthProvider/AuthProvider";
+
 
 
 const Navbar = () => {
     const { userEmail } = useIsAuthenticated()
-    const {currentUser} = useContext(authContext)
+    const {currentUser,setCurrentUser} = useContext(authContext)
+    const navigate =  useNavigate()
     const routes = <>
         <li ><NavLink to="/">Home</NavLink></li>
         <li ><NavLink to="/login">Login</NavLink></li>
         <li ><NavLink to="/manageTask">Manage Task</NavLink></li>
     </>
+
+    const handleSignOut=()=>{
+        localStorage.removeItem("userEmail")
+        localStorage.removeItem("userId")
+        navigate("/")
+        setCurrentUser("")
+
+    }
     return (
         <div className="navbar bg-base-100">
             <div className="navbar-start">
@@ -34,7 +44,19 @@ const Navbar = () => {
             </div>
             <div className="navbar-end ">
             {
-                userEmail && <img className="border-2 w-[50px] h-[50px] rounded-full" src={userEmail && userImage} alt="" />
+                // userEmail && <img className="border-2 w-[50px] h-[50px] rounded-full" src={userEmail && userImage} alt="" />
+                currentUser && <div className="dropdown  dropdown-end">
+                <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+                    <div className="w-10 rounded-full">
+                        <img alt="User Profile" src={currentUser && userImage} />
+                    </div>
+                </label>
+                <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-gray-600 rounded-box w-36">
+                    <button onClick={handleSignOut}>
+                        <li><a className="text-white">Logout</a></li>
+                    </button>
+                </ul>
+            </div>
             }
             </div>
         </div>
