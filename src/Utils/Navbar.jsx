@@ -51,7 +51,7 @@ const Navbar = () => {
                         <img alt="User Profile" src={currentUser && userImage} />
                     </div>
                 </label>
-                <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-gray-600 rounded-box w-36">
+                <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-gray-600 rounded-lg w-32">
                     <button onClick={handleSignOut}>
                         <li><a className="text-white">Logout</a></li>
                     </button>

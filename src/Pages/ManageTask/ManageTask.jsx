@@ -26,7 +26,7 @@ const ManageTask = () => {
         console.log(taskStatus);
         try {
             const response = await axiosPublic.patch(`/todos/updateTask/${taskId}`, { status: statusValue })
-            console.log(response?.data?.data);
+            // console.log(response?.data?.data);
             if (response?.data?.success) {
                 Swal.fire({
                     position: "top",
@@ -59,17 +59,52 @@ const ManageTask = () => {
         }
     }
 
+    const handleDeleteTask=async(taskId)=>{
+        // console.log(taskId);
+        try {
+            const response = await axiosPublic.delete(`/todos/deleteTask/${taskId}`)
+            // console.log(response);
+            if (response?.data?.success) {
+                Swal.fire({
+                    position: "top",
+                    icon: "success",
+                    title: "Task deleted Successfully",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                refetch();
+            }
+            else {
+                Swal.fire({
+                    position: "top",
+                    icon: "error",
+                    title: "Failed to delete task",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+
+        } catch (error) {
+            console.log(error);
+            Swal.fire({
+                position: "top",
+                icon: "error",
+                title: `${error?.response?.data?.message || error?.message}`,
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    }
+
     const handleCheckboxChange = async (taskId) => {
-        // setTaskStatus("done")
         const doneStatusValue = "done"
         await handleUpdateTaskStatus(taskId, doneStatusValue)
     }
 
     const handleStatusChange = async (e, taskId) => {
-        // setTaskStatus(event.target.value)
         const statusValue = e.target.value
         await handleUpdateTaskStatus(taskId, statusValue)
-        // console.log(event.target.value,taskId);
+
     }
 
     return (
@@ -102,7 +137,7 @@ const ManageTask = () => {
                                     <td className="px-4 py-2">
                                         <label className="cursor-pointer flex items-center">
                                             <input type="checkbox" disabled={task?.status === "done"}
-                                                defaultChecked={task?.status === "done"}
+                                                checked={task?.status === "done"}
                                                 onChange={() => handleCheckboxChange(task.id)}
                                                 className="checkbox checkbox-success mr-2" />
                                             {task?.title}
@@ -126,7 +161,7 @@ const ManageTask = () => {
                                     </td>
 
                                     <td className="px-4 py-2">
-                                        <button className="bg-red-500 text-white px-4 py-1 rounded"><i className="fa-solid fa-trash"></i></button>
+                                        <button onClick={()=>handleDeleteTask(task?.id)} className="bg-red-500 text-white px-4 py-1 rounded"><i className="fa-solid fa-trash"></i></button>
                                     </td>
                                 </tr>
 
