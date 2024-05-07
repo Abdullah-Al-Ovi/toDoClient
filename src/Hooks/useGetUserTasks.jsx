@@ -11,7 +11,7 @@ const useGetUserTasks = () => {
         enabled: !!userEmail,
         queryFn: async()=>{
             const response = await axiosPublic.get(`/todos/myTasks/${userId}`);
-            console.log(response?.data?.data);
+            // console.log(response?.data?.data);
             return response?.data?.data
         }
     })

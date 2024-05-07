@@ -1,12 +1,14 @@
-import { useEffect } from 'react';
-import useIsAuthenticated from '../../Hooks/useIsAuthenticated';
+import { useEffect, useState } from 'react';
 import useGetUserTasks from '../../Hooks/useGetUserTasks';
 import Swal from 'sweetalert2';
-import TaskTable from '../../Components/TaskTable/TaskTable';
 import TaskAddingModal from '../../Components/TaskAddingModal/TaskAddingModal';
+import useAxios from '../../Hooks/useAxios';
 
 const ManageTask = () => {
     const [tasks, refetch, isError] = useGetUserTasks();
+    const [taskStatus, setTaskStatus] = useState("")
+    const axiosPublic = useAxios()
+    // console.log(tasks);
 
     useEffect(() => {
         if (isError) {
@@ -19,6 +21,56 @@ const ManageTask = () => {
             });
         }
     }, [isError]);
+
+    const handleUpdateTaskStatus = async (taskId, statusValue) => {
+        console.log(taskStatus);
+        try {
+            const response = await axiosPublic.patch(`/todos/updateTask/${taskId}`, { status: statusValue })
+            console.log(response?.data?.data);
+            if (response?.data?.success) {
+                Swal.fire({
+                    position: "top",
+                    icon: "success",
+                    title: "Task updated Successfully",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                refetch();
+            }
+            else {
+                Swal.fire({
+                    position: "top",
+                    icon: "error",
+                    title: "Failed to update task",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+
+        } catch (error) {
+            console.log(error);
+            Swal.fire({
+                position: "top",
+                icon: "error",
+                title: `${error?.response?.data?.message || error?.message}`,
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    }
+
+    const handleCheckboxChange = async (taskId) => {
+        // setTaskStatus("done")
+        const doneStatusValue = "done"
+        await handleUpdateTaskStatus(taskId, doneStatusValue)
+    }
+
+    const handleStatusChange = async (e, taskId) => {
+        // setTaskStatus(event.target.value)
+        const statusValue = e.target.value
+        await handleUpdateTaskStatus(taskId, statusValue)
+        // console.log(event.target.value,taskId);
+    }
 
     return (
         <div className='w-[90%] mx-auto my-10'>
@@ -49,23 +101,28 @@ const ManageTask = () => {
                                 <tr key={idx} className="border-b-2">
                                     <td className="px-4 py-2">
                                         <label className="cursor-pointer flex items-center">
-                                            <input type="checkbox" disabled={task?.status === "done"} defaultChecked={task?.status === "done"} className="checkbox checkbox-success mr-2" />
+                                            <input type="checkbox" disabled={task?.status === "done"}
+                                                defaultChecked={task?.status === "done"}
+                                                onChange={() => handleCheckboxChange(task.id)}
+                                                className="checkbox checkbox-success mr-2" />
                                             {task?.title}
                                         </label>
                                     </td>
                                     <td className="px-4 py-2">{task?.description}</td>
                                     <td className="px-4 py-2">{task?.createdAt}</td>
                                     <td className="px-4 py-2">
-                                        <select disabled={task?.status === "done"} className="select select-bordered max-w-xs">
-                                            <option disabled selected>{
-                                                task?.status === "todo" ? "Upcoming" :
-                                                task?.status === "going" ? "Ongoing" :
-                                                task?.status === "done" ? "Completed" : null
-                                            }</option>
-                                            { task?.status === "todo" || <option>Upcoming</option>}
-                                           { task?.status === "going" || <option>Ongoing</option> }
-                                           { task?.status === "done" || <option>Completed</option> }
+                                        <select
+                                            value={task?.status}
+                                            onChange={(e) => handleStatusChange(e, task?.id)}
+                                            disabled={task?.status === "done"}
+                                            className="select select-bordered max-w-xs"
+                                        >
+                                            <option disabled value="">Select Status</option>
+                                            <option value="todo">Upcoming</option>
+                                            <option value="going">Ongoing</option>
+                                            <option value="done">Completed</option>
                                         </select>
+
                                     </td>
 
                                     <td className="px-4 py-2">
