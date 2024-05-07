@@ -8,7 +8,7 @@ import { authContext } from '../AuthProvider/AuthProvider';
 
 const Banner = () => {
     const {userEmail} = useIsAuthenticated()
-    const {currentUser} = useContext(authContext)
+    // const {currentUser} = useContext(authContext)
     return (
         <Container>
         <section className="flex flex-col-reverse lg:flex-row justify-between items-center gap-4">
@@ -19,7 +19,7 @@ const Banner = () => {
               Seize command of your daily tasks. Our platform streamlines task management, ensuring effortless prioritization and goal achievement.</p>
 
             <button>
-              <Link to={currentUser?.id ? '/manageTask' : '/login'}>
+              <Link to={userEmail ? '/manageTask' : '/login'}>
                 <button className="px-6 py-2 bg-[#0087EB] text-white font-bold rounded-md hover:bg-zinc-800 transition-colors">Lets Explore</button>
               </Link>
             </button>

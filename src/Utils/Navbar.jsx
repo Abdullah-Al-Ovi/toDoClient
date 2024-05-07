@@ -34,7 +34,7 @@ const Navbar = () => {
             </div>
             <div className="navbar-end ">
             {
-                currentUser?.id && <img className="border-2 w-[50px] h-[50px] rounded-full" src={currentUser?.id && userImage} alt="" />
+                userEmail && <img className="border-2 w-[50px] h-[50px] rounded-full" src={userEmail && userImage} alt="" />
             }
             </div>
         </div>

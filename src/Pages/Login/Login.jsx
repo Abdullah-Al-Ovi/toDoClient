@@ -18,7 +18,9 @@ const Login = () => {
             const response = await axiosPublic.post("/users/login",{email,password})
             console.log(response?.data);
             if(response?.data?.success){
-                setCurrentUser(response?.data?.data)
+                // setCurrentUser(response?.data?.data)
+                localStorage.setItem("userEmail",JSON.stringify(response?.data?.data?.email))
+                localStorage.setItem("userId",JSON.stringify(response?.data?.data?.id))
                 Swal.fire({
                     position: "top",
                     icon: "success",
