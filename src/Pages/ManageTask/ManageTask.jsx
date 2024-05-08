@@ -3,14 +3,18 @@ import useGetUserTasks from '../../Hooks/useGetUserTasks';
 import Swal from 'sweetalert2';
 import TaskAddingModal from '../../Components/TaskAddingModal/TaskAddingModal';
 import useAxios from '../../Hooks/useAxios';
+import SearchingByTitleModal from '../../Components/SearchingbyTitleModal/SearchingByTitleModal';
 
 const ManageTask = () => {
     const [tasks, refetch, isError] = useGetUserTasks();
-    const [taskStatus, setTaskStatus] = useState("")
+    const [tasksToPreview,setTasksToPriview] = useState([])
+    const [isErrorFromSearch,setIsErrorFromSearch] = useState(false)
+    console.log(tasks);
+    console.log(tasksToPreview);
     const axiosPublic = useAxios()
-    // console.log(tasks);
 
     useEffect(() => {
+        setTasksToPriview(tasks)
         if (isError) {
             Swal.fire({
                 position: "top",
@@ -20,10 +24,19 @@ const ManageTask = () => {
                 timer: 1500
             });
         }
-    }, [isError]);
+        else if(isErrorFromSearch){
+            Swal.fire({
+                position: "top",
+                icon: "error",
+                title: "Failed to search task",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    }, [isError,tasks,isErrorFromSearch]);
 
     const handleUpdateTaskStatus = async (taskId, statusValue) => {
-        console.log(taskStatus);
+        // console.log(taskStatus);
         try {
             const response = await axiosPublic.patch(`/todos/updateTask/${taskId}`, { status: statusValue })
             // console.log(response?.data?.data);
@@ -115,11 +128,11 @@ const ManageTask = () => {
                 </div>
                 <div className='space-x-5 text-lg'>
                     <i onClick={() => document.getElementById('my_modal_3').showModal()} className="fa-solid fa-plus"></i>
-                    <i className="fa-solid fa-magnifying-glass"></i>
+                    <i onClick={()=>document.getElementById('my_modal_2').showModal()} className="fa-solid fa-magnifying-glass"></i>
                 </div>
             </div>
             <div>
-                {tasks?.length > 0 ? (
+                {tasksToPreview?.length > 0 ? (
                     <table className=' w-full'>
                         <thead>
                             <tr className="border-b-2">
@@ -131,7 +144,7 @@ const ManageTask = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {tasks.map((task, idx) => (
+                            {tasksToPreview?.map((task, idx) => (
 
                                 <tr key={idx} className="border-b-2">
                                     <td className="px-4 py-2">
@@ -175,6 +188,11 @@ const ManageTask = () => {
                 )}
             </div>
             <TaskAddingModal id="my_modal_3" refetch={refetch} />
+            <SearchingByTitleModal 
+            id="my_modal_2"
+            setIsErrorFromSearch={setIsErrorFromSearch}
+            setTasksToPriview={setTasksToPriview}
+            ></SearchingByTitleModal>
         </div>
     );
 };
