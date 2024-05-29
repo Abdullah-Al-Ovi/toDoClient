@@ -44,7 +44,7 @@ const ManageTask = () => {
                 Swal.fire({
                     position: "top",
                     icon: "success",
-                    title: "Task updated Successfully",
+                    title: "Task Updated Successfully",
                     showConfirmButton: false,
                     timer: 1500
                 });
